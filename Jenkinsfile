@@ -1,30 +1,27 @@
 pipeline {
-    agent {
-        node {
-            label 'labelName'
-        }
-    }
+    agent any
+
     stages {
-        stage('SCM') {
+        stage('Hello') {
             steps {
-                checkout scm
-            }
-        }
-        stage('Example') {
-            steps {
-                script {
-                    if (env.BRANCH_NAME == '*/main') {
-                        echo 'I only execute on the main branch'
-                    } else {
-                        echo 'I execute elsewhere'
-                    }
-                }
+                echo 'hello world'
             }
         }
     }
     post {
-        always {
-            discordSend webhookURL: 'https://discord.com/api/webhooks/1042290298262396938/lrenOCiI8f4UbarX5VJabW3yAZzqzJ8yFVbyw4ofz29cFJ3NLoVa_AKc1dM5v4OBWvx8'
-        }
+            success {
+                discordSend description: '알림테스트',
+                  footer: '테스트 빌드가 성공했습니다.',
+                  link: env.BUILD_URL, result: currentBuild.currentResult,
+                  title: '테스트 젠킨스 job',
+                  webhookURL: '{webhook주소}'
+            }
+            failure {
+                discordSend description: '알림테스트',
+                  footer: '테스트 빌드가 실패했습니다.',
+                  link: env.BUILD_URL, result: currentBuild.currentResult,
+                  title: '테스트 젠킨스 job',
+                  webhookURL: '{webhook주소}'
+            }
     }
 }
